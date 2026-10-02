@@ -31,10 +31,10 @@ const WAYPOINTS = [
   { p: 0.00, theta: 0.72, phi: 1.15, radius: 820, explode: 0.0, step: 0 }, // 00 Overview
   { p: 0.16, theta: 1.08, phi: 0.92, radius: 560, explode: 0.0, step: 1 }, // 01 Feeder Staging
   { p: 0.32, theta: 1.48, phi: 0.80, radius: 480, explode: 0.0, step: 2 }, // 02 Vision Scan
-  { p: 0.48, theta: 1.88, phi: 1.06, radius: 550, explode: 0.0, step: 3 }, // 03 Chute Descent
-  { p: 0.65, theta: 2.32, phi: 0.88, radius: 460, explode: 0.0, step: 4 }, // 04 32ms Diverter
+  { p: 0.49, theta: 1.88, phi: 1.06, radius: 550, explode: 0.0, step: 3 }, // 03 Chute Descent
+  { p: 0.66, theta: 2.32, phi: 0.88, radius: 460, explode: 0.0, step: 4 }, // 04 32ms Diverter
   { p: 0.82, theta: 2.74, phi: 0.78, radius: 500, explode: 0.0, step: 5 }, // 05 Vault Sorting
-  { p: 1.00, theta: 0.85, phi: 1.12, radius: 920, explode: 1.0, step: 6 }, // 06 Exploded BOM
+  { p: 0.93, theta: 0.85, phi: 1.12, radius: 920, explode: 1.0, step: 6 }, // 06 Exploded BOM
 ];
 
 function interpolateWaypoints(p) {
@@ -208,6 +208,9 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
   const cameraAngleRef = useRef({ theta: 0.72, phi: 1.15, radius: 820 });
   const targetAngleRef = useRef({ theta: 0.72, phi: 1.15, radius: 820, explode: 0 });
   const currentExplodeRef = useRef(0);
+  const isDirectGlidingRef = useRef(false);
+  const prevScrollYRef = useRef(0);
+  const scrollProgressRef = useRef(0);
 
   // Interactive Simulation Mechanism Refs
   const simMeshRefs = useRef({
@@ -1013,7 +1016,26 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
       if (totalScrollable <= 0) return;
 
       const p = Math.max(0, Math.min(1, -rect.top / totalScrollable));
+      scrollProgressRef.current = p;
       setScrollProgress(p);
+
+      // Fast Direct Transition to Timeline after 6th scroll
+      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const isScrollingDown = currentScrollY > prevScrollYRef.current;
+      prevScrollYRef.current = currentScrollY;
+
+      if (p >= 0.96 && isScrollingDown && !isDirectGlidingRef.current) {
+        isDirectGlidingRef.current = true;
+        if (onExploreTimeline) {
+          onExploreTimeline();
+        } else {
+          const el = document.getElementById('timeline');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+        setTimeout(() => {
+          isDirectGlidingRef.current = false;
+        }, 900);
+      }
 
       // Continuous Waypoint Interpolation
       const interpolated = interpolateWaypoints(p);
@@ -1076,9 +1098,28 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
       }
     };
 
+    const handleWheel = (e) => {
+      if (e.deltaY > 15 && scrollProgressRef.current >= 0.92 && !isDirectGlidingRef.current) {
+        isDirectGlidingRef.current = true;
+        if (onExploreTimeline) {
+          onExploreTimeline();
+        } else {
+          const el = document.getElementById('timeline');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+        setTimeout(() => {
+          isDirectGlidingRef.current = false;
+        }, 900);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [onExploreTimeline]);
 
   // Jump to specific step
   const scrollToStep = (stepIdx) => {
@@ -1117,7 +1158,7 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
   }, [renderMode, showDimensions]);
 
   return (
-    <div ref={containerRef} className="hero-scroll-track" style={{ height: '700vh', position: 'relative' }}>
+    <div ref={containerRef} className="hero-scroll-track" style={{ height: '360vh', position: 'relative' }}>
       {/* Sticky Fullscreen 3D CAD Stage */}
       <div className="hero-scroll-viewport">
         {/* Aaruush Horizon Glow Backdrop */}
@@ -1170,6 +1211,17 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
               <span className="step-nav-label">{item.title}</span>
             </button>
           ))}
+          <button
+            onClick={() => {
+              if (onExploreTimeline) onExploreTimeline();
+              else document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="step-nav-item step-nav-timeline-fast"
+            title="Direct Fast Travel to Timeline Corridor"
+          >
+            <span className="step-nav-num">TL</span>
+            <span className="step-nav-label">Timeline ↓</span>
+          </button>
         </div>
 
         {/* Sleek Minimal Step Caption Capsule (Bottom-Center, Non-Intrusive) */}
@@ -1179,6 +1231,19 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
           <span className="step-capsule-title">{STEPS[activeStep]?.title}</span>
           <span className="step-capsule-sep">•</span>
           <span className="step-capsule-desc">{STEPS[activeStep]?.desc}</span>
+          {activeStep === 6 && (
+            <button
+              onClick={() => {
+                if (onExploreTimeline) onExploreTimeline();
+                else document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="step-timeline-fast-btn"
+              title="Direct Fast Transition to Development Timeline"
+            >
+              <span>Direct to Timeline</span>
+              <ChevronDown size={14} />
+            </button>
+          )}
         </div>
 
         {/* Bottom Scroll Cue */}

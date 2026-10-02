@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Layers, Award, Cpu, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Layers, ArrowDown } from 'lucide-react';
 
-const TIMELINE_PHASES = [
+export const TIMELINE_PHASES = [
   {
     year: '2024',
     phase: 'PHASE 01',
@@ -102,125 +102,199 @@ const TIMELINE_PHASES = [
 
 export default function TimelineCorridor() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const trackRef = useRef(null);
+  const isDirectScrollingRef = useRef(false);
+
   const activePhase = TIMELINE_PHASES[activeIndex];
 
+  // Scroll-Driven Phase Switching Engine
+  useEffect(() => {
+    const handleTimelineScroll = () => {
+      if (!trackRef.current) return;
+      const rect = trackRef.current.getBoundingClientRect();
+      const maxScroll = rect.height - window.innerHeight;
+      if (maxScroll <= 0) return;
+
+      // Progress p strictly between 0 and 1
+      const p = Math.max(0, Math.min(1, -rect.top / maxScroll));
+      setScrollProgress(p);
+
+      // Quantize 4 phases evenly along the scroll path
+      // 0.00 - 0.25 -> Phase 0 (2024)
+      // 0.25 - 0.50 -> Phase 1 (2025)
+      // 0.50 - 0.75 -> Phase 2 (2025-26)
+      // 0.75 - 1.00 -> Phase 3 (2026)
+      const count = TIMELINE_PHASES.length;
+      const calculatedIndex = Math.min(count - 1, Math.floor(p * count));
+      setActiveIndex(calculatedIndex);
+    };
+
+    window.addEventListener('scroll', handleTimelineScroll, { passive: true });
+    handleTimelineScroll();
+    return () => window.removeEventListener('scroll', handleTimelineScroll);
+  }, []);
+
+  // Jump to specific phase on click
+  const scrollToPhase = (targetIdx) => {
+    if (!trackRef.current) return;
+    const rect = trackRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const trackTop = rect.top + scrollTop;
+    const maxScroll = trackRef.current.clientHeight - window.innerHeight;
+    const targetP = (targetIdx + 0.45) / TIMELINE_PHASES.length;
+
+    window.scrollTo({
+      top: trackTop + targetP * maxScroll,
+      behavior: 'smooth',
+    });
+  };
+
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % TIMELINE_PHASES.length);
+    const nextIdx = Math.min(TIMELINE_PHASES.length - 1, activeIndex + 1);
+    scrollToPhase(nextIdx);
   };
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + TIMELINE_PHASES.length) % TIMELINE_PHASES.length);
+    const prevIdx = Math.max(0, activeIndex - 1);
+    scrollToPhase(prevIdx);
   };
 
   return (
-    <section id="timeline" className="portal-section aaruush-timeline-section">
-      <div className="container-custom">
-        {/* Section Header */}
-        <div className="section-header">
-          <span className="section-tag">Engineering Evolution</span>
-          <h2 className="section-title">Development Timeline</h2>
-          <div className="aaruush-divider">
-            <span className="aaruush-divider-line" />
-            <span className="aaruush-divider-dot" />
-            <span className="aaruush-divider-line" style={{ transform: 'rotate(180deg)' }} />
-          </div>
-          <p className="section-desc">
-            Explore the milestone progression of SEGROBOT from kinematics simulation to full tournament autonomous sorting.
-          </p>
-        </div>
-
-        {/* Phase Navigation Pills */}
-        <div className="timeline-nav-pills">
-          {TIMELINE_PHASES.map((p, idx) => (
-            <button
-              key={p.year}
-              onClick={() => setActiveIndex(idx)}
-              className={`timeline-nav-pill ${idx === activeIndex ? 'active' : ''}`}
-            >
-              <span className="timeline-pill-year">{p.year}</span>
-              <span className="timeline-pill-label">{p.phase}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Aaruush 3D Perspective Stage */}
-        <div className="aaruush-timeline-stage">
-          {/* Neon Perspective Runway Background */}
-          <div className="timeline-perspective-runway">
-            <div className="runway-grid-lines" />
-          </div>
-
-          {/* Floating Year Watermark on Right */}
-          <div className="timeline-floating-year">
-            <span className="timeline-huge-year">{activePhase.year}</span>
-            <div className="timeline-year-line">
-              <span className="line-bar" />
-              <span className="line-dot" />
+    <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '340vh', position: 'relative' }}>
+      {/* Sticky Fullscreen Stage */}
+      <div className="timeline-sticky-stage">
+        <div className="container-custom" style={{ width: '100%', maxWidth: '1200px' }}>
+          {/* Section Header */}
+          <div className="timeline-header-compact">
+            <div className="timeline-header-top">
+              <span className="section-tag">Engineering Evolution</span>
+              <div className="timeline-phase-indicator-pill">
+                <span className="phase-indicator-pulse" />
+                <span>SCROLL DRIVEN • {activePhase.phase} / 04</span>
+              </div>
             </div>
-            <span className="timeline-phase-tag">{activePhase.phase}</span>
+            <h2 className="timeline-title-compact">Development Timeline Corridor</h2>
           </div>
 
-          {/* 3-Card Filmstrip Showcase (Iconic Aaruush Layout) */}
-          <div className="timeline-cards-strip">
-            {/* Sprocket Holes on Left */}
-            <div className="sprocket-track left" />
-
-            <div className="timeline-cards-grid">
-              {activePhase.cards.map((card, cIdx) => (
-                <div key={cIdx} className="timeline-film-card">
-                  <div className="film-card-image-wrap">
-                    <img src={card.src} alt={card.title} />
-                    <div className="film-card-shadow" />
-                    <div className="film-card-arrow-marker" />
-                  </div>
-                  <div className="film-card-caption">
-                    <h5 className="film-card-title">{card.title}</h5>
-                    <p className="film-card-text">{card.caption}</p>
-                  </div>
-                </div>
+          {/* Continuous Scroll Progress Scrubber Bar */}
+          <div className="timeline-scrubber-wrap">
+            <div className="timeline-scrubber-track">
+              <div
+                className="timeline-scrubber-fill"
+                style={{ width: `${Math.round(scrollProgress * 100)}%` }}
+              />
+            </div>
+            <div className="timeline-scrubber-phases">
+              {TIMELINE_PHASES.map((p, idx) => (
+                <button
+                  key={p.year}
+                  onClick={() => scrollToPhase(idx)}
+                  className={`timeline-scrubber-node ${idx === activeIndex ? 'active' : ''} ${idx < activeIndex ? 'completed' : ''}`}
+                >
+                  <span className="node-dot" />
+                  <span className="node-year">{p.year}</span>
+                  <span className="node-label">{p.phase}</span>
+                </button>
               ))}
             </div>
-
-            {/* Sprocket Holes on Right */}
-            <div className="sprocket-track right" />
           </div>
 
-          {/* Active Phase Narrative HUD Panel */}
-          <div className="timeline-narrative-hud">
-            <div className="timeline-hud-tag">
-              {activePhase.tag} • {activePhase.phase}
+          {/* 3D Perspective Stage */}
+          <div className="aaruush-timeline-stage timeline-interactive-card">
+            {/* Neon Perspective Runway Background */}
+            <div className="timeline-perspective-runway">
+              <div className="runway-grid-lines" />
             </div>
-            <h4 className="timeline-hud-title">{activePhase.title}</h4>
-            <p className="timeline-hud-desc">{activePhase.desc}</p>
 
-            {/* Stepper Controls */}
-            <div className="timeline-controls-row">
-              <button
-                onClick={handlePrev}
-                className="btn-timeline-nav"
-                aria-label="Previous Phase"
-              >
-                <ChevronLeft size={18} />
-                <span>Previous Phase</span>
-              </button>
-              <div className="timeline-step-indicator">
-                {TIMELINE_PHASES.map((_, i) => (
-                  <span
-                    key={i}
-                    onClick={() => setActiveIndex(i)}
-                    className={`step-dot ${i === activeIndex ? 'active' : ''}`}
-                  />
+            {/* Floating Year Watermark on Right */}
+            <div key={`year-${activeIndex}`} className="timeline-floating-year timeline-animated-year">
+              <span className="timeline-huge-year">{activePhase.year}</span>
+              <div className="timeline-year-line">
+                <span className="line-bar" />
+                <span className="line-dot" />
+              </div>
+              <span className="timeline-phase-tag">{activePhase.phase}</span>
+            </div>
+
+            {/* 3-Card Filmstrip Showcase with Smooth Phase Transition */}
+            <div className="timeline-cards-strip">
+              <div className="sprocket-track left" />
+
+              <div key={`cards-${activeIndex}`} className="timeline-cards-grid timeline-cards-animated">
+                {activePhase.cards.map((card, cIdx) => (
+                  <div
+                    key={cIdx}
+                    className="timeline-film-card"
+                    style={{ animationDelay: `${cIdx * 0.08}s` }}
+                  >
+                    <div className="film-card-image-wrap">
+                      <img src={card.src} alt={card.title} loading="lazy" />
+                      <div className="film-card-shadow" />
+                      <div className="film-card-arrow-marker" />
+                    </div>
+                    <div className="film-card-caption">
+                      <h5 className="film-card-title">{card.title}</h5>
+                      <p className="film-card-text">{card.caption}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <button
-                onClick={handleNext}
-                className="btn-timeline-nav"
-                aria-label="Next Phase"
-              >
-                <span>Next Phase</span>
-                <ChevronRight size={18} />
-              </button>
+
+              <div className="sprocket-track right" />
             </div>
+
+            {/* Active Phase Narrative HUD Panel */}
+            <div key={`hud-${activeIndex}`} className="timeline-narrative-hud timeline-hud-animated">
+              <div className="timeline-hud-tag">
+                {activePhase.tag} • {activePhase.phase}
+              </div>
+              <h4 className="timeline-hud-title">{activePhase.title}</h4>
+              <p className="timeline-hud-desc">{activePhase.desc}</p>
+
+              {/* Stepper Controls & Manual Fallback */}
+              <div className="timeline-controls-row">
+                <button
+                  onClick={handlePrev}
+                  className="btn-timeline-nav"
+                  disabled={activeIndex === 0}
+                  aria-label="Previous Phase"
+                >
+                  <ChevronLeft size={16} />
+                  <span>Prev</span>
+                </button>
+                <div className="timeline-step-indicator">
+                  {TIMELINE_PHASES.map((_, i) => (
+                    <span
+                      key={i}
+                      onClick={() => scrollToPhase(i)}
+                      className={`step-dot ${i === activeIndex ? 'active' : ''}`}
+                      title={`Jump to Phase 0${i + 1}`}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={handleNext}
+                  className="btn-timeline-nav"
+                  disabled={activeIndex === TIMELINE_PHASES.length - 1}
+                  aria-label="Next Phase"
+                >
+                  <span>Next</span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Scroll Cue */}
+          <div className="timeline-bottom-scroll-cue">
+            <span className="cue-dot" />
+            <span className="cue-msg">
+              {activeIndex < 3
+                ? `SCROLL DOWN TO ADVANCE TIMELINE (${activeIndex + 1}/4) • NEXT: ${TIMELINE_PHASES[activeIndex + 1].phase}`
+                : 'TIMELINE COMPLETED • SCROLL TO EXPLORE CHALLENGE MANDATES'}
+            </span>
+            <ArrowDown size={14} className="cue-arrow" />
           </div>
         </div>
       </div>
