@@ -1915,6 +1915,56 @@ img, video {
    AARUUSH TIMELINE & MANDATES STYLE CARDS
    ========================================================================== */
 
+.portal-section.mandates-section {
+  padding-top: 3.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (min-width: 1024px) {
+  .portal-section.mandates-section {
+    padding-top: 4rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+.mandates-section .section-header {
+  margin-bottom: 2rem;
+}
+
+.mandates-section .mandates-grid {
+  margin-bottom: 2rem;
+}
+
+.mandates-bottom-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-mandates-to-subsystems {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(239, 101, 34, 0.7);
+  background: rgba(239, 101, 34, 0.22);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 16px rgba(239, 101, 34, 0.4);
+}
+
+.btn-mandates-to-subsystems:hover {
+  background: var(--accent-orange);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(239, 101, 34, 0.75);
+}
+
 .mandates-grid {
   display: grid;
   grid-template-columns: 1fr;
