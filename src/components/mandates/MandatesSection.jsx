@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   Archive,
   BarChart2,
@@ -7,56 +7,6 @@ import {
 } from 'lucide-react';
 
 export default function MandatesSection() {
-  const sectionRef = useRef(null);
-  const isGlidingRef = useRef(false);
-  const prevYRef = useRef(0);
-
-  // Immediately advance to next section (#subsystems) when scrolling down from mandates
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const currentY = window.pageYOffset || document.documentElement.scrollTop;
-      const isScrollingDown = currentY > prevYRef.current;
-      prevYRef.current = currentY;
-
-      // When user is viewing mandates and scrolls downward:
-      if (rect.top <= 100 && rect.bottom > 200 && isScrollingDown && !isGlidingRef.current) {
-        isGlidingRef.current = true;
-        const subsystemsEl = document.getElementById('subsystems');
-        if (subsystemsEl) {
-          subsystemsEl.scrollIntoView({ behavior: 'smooth' });
-        }
-        setTimeout(() => {
-          isGlidingRef.current = false;
-        }, 900);
-      }
-    };
-
-    const handleWheel = (e) => {
-      if (e.deltaY > 15 && !isGlidingRef.current) {
-        const rect = sectionRef.current?.getBoundingClientRect();
-        if (rect && rect.top <= 100 && rect.bottom > 200) {
-          isGlidingRef.current = true;
-          const subsystemsEl = document.getElementById('subsystems');
-          if (subsystemsEl) {
-            subsystemsEl.scrollIntoView({ behavior: 'smooth' });
-          }
-          setTimeout(() => {
-            isGlidingRef.current = false;
-          }, 900);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, []);
-
   const scrollToSubsystems = () => {
     const el = document.getElementById('subsystems');
     if (el) {
@@ -65,7 +15,7 @@ export default function MandatesSection() {
   };
 
   return (
-    <section id="mandates" ref={sectionRef} className="portal-section mandates-section">
+    <section id="mandates" className="portal-section mandates-section">
       <div className="container-custom">
         {/* Section Header */}
         <div className="section-header">

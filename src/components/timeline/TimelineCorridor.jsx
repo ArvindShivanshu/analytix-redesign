@@ -104,8 +104,6 @@ export default function TimelineCorridor() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const trackRef = useRef(null);
-  const isGlidingNextRef = useRef(false);
-  const prevYRef = useRef(0);
 
   const activePhase = TIMELINE_PHASES[activeIndex];
 
@@ -123,36 +121,20 @@ export default function TimelineCorridor() {
 
       // Quantize 4 phases evenly along the scroll path:
       // Phase 0 (2024): 0.00 - 0.28
-      // Phase 1 (2025): 0.28 - 0.56
-      // Phase 2 (2025-26): 0.56 - 0.82
-      // Phase 3 (2026): 0.82 - 0.95
+      // Phase 1 (2025): 0.28 - 0.54
+      // Phase 2 (2025-26): 0.54 - 0.78
+      // Phase 3 (2026): 0.78 - 1.00
       let calculatedIndex = 0;
       if (p < 0.28) {
         calculatedIndex = 0;
-      } else if (p < 0.56) {
+      } else if (p < 0.54) {
         calculatedIndex = 1;
-      } else if (p < 0.82) {
+      } else if (p < 0.78) {
         calculatedIndex = 2;
       } else {
         calculatedIndex = 3;
       }
       setActiveIndex(calculatedIndex);
-
-      // Immediately move to next section after the 2026 portion ends on scroll down
-      const currentY = window.pageYOffset || document.documentElement.scrollTop;
-      const isScrollingDown = currentY > prevYRef.current;
-      prevYRef.current = currentY;
-
-      if (p >= 0.94 && isScrollingDown && !isGlidingNextRef.current) {
-        isGlidingNextRef.current = true;
-        const mandatesEl = document.getElementById('mandates');
-        if (mandatesEl) {
-          mandatesEl.scrollIntoView({ behavior: 'smooth' });
-        }
-        setTimeout(() => {
-          isGlidingNextRef.current = false;
-        }, 800);
-      }
     };
 
     window.addEventListener('scroll', handleTimelineScroll, { passive: true });
