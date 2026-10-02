@@ -1172,17 +1172,6 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
               <span className="step-nav-label">{item.title}</span>
             </button>
           ))}
-          <button
-            onClick={() => {
-              if (onExploreTimeline) onExploreTimeline();
-              else document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="step-nav-item step-nav-timeline-fast"
-            title="Direct Fast Travel to Timeline Corridor"
-          >
-            <span className="step-nav-num">TL</span>
-            <span className="step-nav-label">Timeline ↓</span>
-          </button>
         </div>
 
         {/* Sleek Minimal Step Caption Capsule (Bottom-Center, Non-Intrusive) */}
