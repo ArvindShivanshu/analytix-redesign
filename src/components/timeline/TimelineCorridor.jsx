@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Layers, ArrowDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowDown } from 'lucide-react';
 
 export const TIMELINE_PHASES = [
   {
@@ -104,6 +104,8 @@ export default function TimelineCorridor() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const trackRef = useRef(null);
+  const isGlidingNextRef = useRef(false);
+  const prevYRef = useRef(0);
 
   const activePhase = TIMELINE_PHASES[activeIndex];
 
@@ -119,14 +121,38 @@ export default function TimelineCorridor() {
       const p = Math.max(0, Math.min(1, -rect.top / maxScroll));
       setScrollProgress(p);
 
-      // Quantize 4 phases evenly along the scroll path
-      // 0.00 - 0.25 -> Phase 0 (2024)
-      // 0.25 - 0.50 -> Phase 1 (2025)
-      // 0.50 - 0.75 -> Phase 2 (2025-26)
-      // 0.75 - 1.00 -> Phase 3 (2026)
-      const count = TIMELINE_PHASES.length;
-      const calculatedIndex = Math.min(count - 1, Math.floor(p * count));
+      // Quantize 4 phases evenly along the scroll path:
+      // Phase 0 (2024): 0.00 - 0.28
+      // Phase 1 (2025): 0.28 - 0.56
+      // Phase 2 (2025-26): 0.56 - 0.82
+      // Phase 3 (2026): 0.82 - 0.95
+      let calculatedIndex = 0;
+      if (p < 0.28) {
+        calculatedIndex = 0;
+      } else if (p < 0.56) {
+        calculatedIndex = 1;
+      } else if (p < 0.82) {
+        calculatedIndex = 2;
+      } else {
+        calculatedIndex = 3;
+      }
       setActiveIndex(calculatedIndex);
+
+      // Immediately move to next section after the 2026 portion ends on scroll down
+      const currentY = window.pageYOffset || document.documentElement.scrollTop;
+      const isScrollingDown = currentY > prevYRef.current;
+      prevYRef.current = currentY;
+
+      if (p >= 0.94 && isScrollingDown && !isGlidingNextRef.current) {
+        isGlidingNextRef.current = true;
+        const mandatesEl = document.getElementById('mandates');
+        if (mandatesEl) {
+          mandatesEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        setTimeout(() => {
+          isGlidingNextRef.current = false;
+        }, 800);
+      }
     };
 
     window.addEventListener('scroll', handleTimelineScroll, { passive: true });
@@ -141,7 +167,9 @@ export default function TimelineCorridor() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const trackTop = rect.top + scrollTop;
     const maxScroll = trackRef.current.clientHeight - window.innerHeight;
-    const targetP = (targetIdx + 0.45) / TIMELINE_PHASES.length;
+
+    const phaseP = [0.12, 0.42, 0.68, 0.88];
+    const targetP = phaseP[targetIdx] ?? 0;
 
     window.scrollTo({
       top: trackTop + targetP * maxScroll,
@@ -150,8 +178,12 @@ export default function TimelineCorridor() {
   };
 
   const handleNext = () => {
-    const nextIdx = Math.min(TIMELINE_PHASES.length - 1, activeIndex + 1);
-    scrollToPhase(nextIdx);
+    if (activeIndex === TIMELINE_PHASES.length - 1) {
+      const mandatesEl = document.getElementById('mandates');
+      if (mandatesEl) mandatesEl.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      scrollToPhase(activeIndex + 1);
+    }
   };
 
   const handlePrev = () => {
@@ -159,8 +191,15 @@ export default function TimelineCorridor() {
     scrollToPhase(prevIdx);
   };
 
+  const scrollToMandates = () => {
+    const mandatesEl = document.getElementById('mandates');
+    if (mandatesEl) {
+      mandatesEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '300vh', position: 'relative' }}>
+    <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '220vh', position: 'relative' }}>
       {/* Sticky Fullscreen Stage */}
       <div className="timeline-sticky-stage">
         <div className="container-custom" style={{ width: '100%', maxWidth: '1150px' }}>
@@ -278,10 +317,9 @@ export default function TimelineCorridor() {
                 <button
                   onClick={handleNext}
                   className="btn-timeline-nav"
-                  disabled={activeIndex === TIMELINE_PHASES.length - 1}
                   aria-label="Next Phase"
                 >
-                  <span>Next</span>
+                  <span>{activeIndex === TIMELINE_PHASES.length - 1 ? 'Mandates' : 'Next'}</span>
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -290,13 +328,24 @@ export default function TimelineCorridor() {
 
           {/* Bottom Scroll Cue */}
           <div className="timeline-bottom-scroll-cue">
-            <span className="cue-dot" />
-            <span className="cue-msg">
-              {activeIndex < 3
-                ? `SCROLL DOWN TO ADVANCE PHASES (${activeIndex + 1}/4) • NEXT: ${TIMELINE_PHASES[activeIndex + 1].phase}`
-                : 'ALL PHASES COMPLETED • SCROLL DOWN FOR CHALLENGE MANDATES'}
-            </span>
-            <ArrowDown size={14} className="cue-arrow" />
+            {activeIndex === 3 ? (
+              <button
+                onClick={scrollToMandates}
+                className="timeline-next-mandates-btn"
+                title="Immediately proceed to Challenge Mandates"
+              >
+                <span>CHALLENGE MANDATES NEXT</span>
+                <ArrowDown size={14} className="cue-arrow" />
+              </button>
+            ) : (
+              <>
+                <span className="cue-dot" />
+                <span className="cue-msg">
+                  SCROLL DOWN TO ADVANCE PHASES ({activeIndex + 1}/4) • NEXT: {TIMELINE_PHASES[activeIndex + 1].phase}
+                </span>
+                <ArrowDown size={14} className="cue-arrow" />
+              </>
+            )}
           </div>
         </div>
       </div>
