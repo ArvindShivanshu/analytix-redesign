@@ -166,13 +166,7 @@ export default function TimelineCorridor() {
         <div className="container-custom" style={{ width: '100%', maxWidth: '1150px' }}>
           {/* Section Header */}
           <div className="timeline-header-compact">
-            <div className="timeline-header-top">
-              <span className="section-tag">Engineering Evolution</span>
-              <div className="timeline-phase-indicator-pill">
-                <span className="phase-indicator-pulse" />
-                <span>SCROLL DRIVEN • {activePhase.phase} / 04</span>
-              </div>
-            </div>
+            <span className="section-tag">Engineering Evolution</span>
             <h2 className="timeline-title-compact">Development Timeline Corridor</h2>
           </div>
 
