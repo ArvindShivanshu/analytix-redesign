@@ -208,8 +208,6 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
   const cameraAngleRef = useRef({ theta: 0.72, phi: 1.15, radius: 820 });
   const targetAngleRef = useRef({ theta: 0.72, phi: 1.15, radius: 820, explode: 0 });
   const currentExplodeRef = useRef(0);
-  const isDirectGlidingRef = useRef(false);
-  const prevScrollYRef = useRef(0);
   const scrollProgressRef = useRef(0);
 
   // Interactive Simulation Mechanism Refs
@@ -1019,24 +1017,6 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
       scrollProgressRef.current = p;
       setScrollProgress(p);
 
-      // Fast Direct Transition to Timeline after 6th scroll
-      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
-      const isScrollingDown = currentScrollY > prevScrollYRef.current;
-      prevScrollYRef.current = currentScrollY;
-
-      if (p >= 0.96 && isScrollingDown && !isDirectGlidingRef.current) {
-        isDirectGlidingRef.current = true;
-        if (onExploreTimeline) {
-          onExploreTimeline();
-        } else {
-          const el = document.getElementById('timeline');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }
-        setTimeout(() => {
-          isDirectGlidingRef.current = false;
-        }, 900);
-      }
-
       // Continuous Waypoint Interpolation
       const interpolated = interpolateWaypoints(p);
       setActiveStep(interpolated.step);
@@ -1098,28 +1078,9 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
       }
     };
 
-    const handleWheel = (e) => {
-      if (e.deltaY > 15 && scrollProgressRef.current >= 0.92 && !isDirectGlidingRef.current) {
-        isDirectGlidingRef.current = true;
-        if (onExploreTimeline) {
-          onExploreTimeline();
-        } else {
-          const el = document.getElementById('timeline');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }
-        setTimeout(() => {
-          isDirectGlidingRef.current = false;
-        }, 900);
-      }
-    };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [onExploreTimeline]);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Jump to specific step
   const scrollToStep = (stepIdx) => {

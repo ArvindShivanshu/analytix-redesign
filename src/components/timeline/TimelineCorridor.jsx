@@ -104,11 +104,10 @@ export default function TimelineCorridor() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const trackRef = useRef(null);
-  const isDirectScrollingRef = useRef(false);
 
   const activePhase = TIMELINE_PHASES[activeIndex];
 
-  // Scroll-Driven Phase Switching Engine
+  // Silky-Smooth Scroll-Driven Phase Switching Engine
   useEffect(() => {
     const handleTimelineScroll = () => {
       if (!trackRef.current) return;
@@ -161,10 +160,10 @@ export default function TimelineCorridor() {
   };
 
   return (
-    <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '340vh', position: 'relative' }}>
+    <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '300vh', position: 'relative' }}>
       {/* Sticky Fullscreen Stage */}
       <div className="timeline-sticky-stage">
-        <div className="container-custom" style={{ width: '100%', maxWidth: '1200px' }}>
+        <div className="container-custom" style={{ width: '100%', maxWidth: '1150px' }}>
           {/* Section Header */}
           <div className="timeline-header-compact">
             <div className="timeline-header-top">
@@ -208,7 +207,7 @@ export default function TimelineCorridor() {
             </div>
 
             {/* Floating Year Watermark on Right */}
-            <div key={`year-${activeIndex}`} className="timeline-floating-year timeline-animated-year">
+            <div className="timeline-floating-year">
               <span className="timeline-huge-year">{activePhase.year}</span>
               <div className="timeline-year-line">
                 <span className="line-bar" />
@@ -217,35 +216,44 @@ export default function TimelineCorridor() {
               <span className="timeline-phase-tag">{activePhase.phase}</span>
             </div>
 
-            {/* 3-Card Filmstrip Showcase with Smooth Phase Transition */}
+            {/* Continuous Horizontal Filmstrip Carousel Track */}
             <div className="timeline-cards-strip">
               <div className="sprocket-track left" />
 
-              <div key={`cards-${activeIndex}`} className="timeline-cards-grid timeline-cards-animated">
-                {activePhase.cards.map((card, cIdx) => (
-                  <div
-                    key={cIdx}
-                    className="timeline-film-card"
-                    style={{ animationDelay: `${cIdx * 0.08}s` }}
-                  >
-                    <div className="film-card-image-wrap">
-                      <img src={card.src} alt={card.title} loading="lazy" />
-                      <div className="film-card-shadow" />
-                      <div className="film-card-arrow-marker" />
+              <div className="timeline-carousel-viewport">
+                <div
+                  className="timeline-carousel-track"
+                  style={{
+                    transform: `translateX(-${activeIndex * 100}%)`,
+                  }}
+                >
+                  {TIMELINE_PHASES.map((phase) => (
+                    <div key={phase.phase} className="timeline-phase-slide">
+                      <div className="timeline-cards-grid">
+                        {phase.cards.map((card, cIdx) => (
+                          <div key={cIdx} className="timeline-film-card">
+                            <div className="film-card-image-wrap">
+                              <img src={card.src} alt={card.title} loading="lazy" />
+                              <div className="film-card-shadow" />
+                              <div className="film-card-arrow-marker" />
+                            </div>
+                            <div className="film-card-caption">
+                              <h5 className="film-card-title">{card.title}</h5>
+                              <p className="film-card-text">{card.caption}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="film-card-caption">
-                      <h5 className="film-card-title">{card.title}</h5>
-                      <p className="film-card-text">{card.caption}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               <div className="sprocket-track right" />
             </div>
 
             {/* Active Phase Narrative HUD Panel */}
-            <div key={`hud-${activeIndex}`} className="timeline-narrative-hud timeline-hud-animated">
+            <div className="timeline-narrative-hud">
               <div className="timeline-hud-tag">
                 {activePhase.tag} • {activePhase.phase}
               </div>
@@ -291,8 +299,8 @@ export default function TimelineCorridor() {
             <span className="cue-dot" />
             <span className="cue-msg">
               {activeIndex < 3
-                ? `SCROLL DOWN TO ADVANCE TIMELINE (${activeIndex + 1}/4) • NEXT: ${TIMELINE_PHASES[activeIndex + 1].phase}`
-                : 'TIMELINE COMPLETED • SCROLL TO EXPLORE CHALLENGE MANDATES'}
+                ? `SCROLL DOWN TO ADVANCE PHASES (${activeIndex + 1}/4) • NEXT: ${TIMELINE_PHASES[activeIndex + 1].phase}`
+                : 'ALL PHASES COMPLETED • SCROLL DOWN FOR CHALLENGE MANDATES'}
             </span>
             <ArrowDown size={14} className="cue-arrow" />
           </div>
