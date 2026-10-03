@@ -184,127 +184,127 @@ export default function TimelineCorridor() {
     <section id="timeline" ref={trackRef} className="timeline-scroll-track" style={{ height: '220vh', position: 'relative' }}>
       {/* Sticky Fullscreen Stage */}
       <div className="timeline-sticky-stage">
-        <div className="container-custom" style={{ width: '100%', maxWidth: '1150px' }}>
+        <div className="container-custom timeline-container-inner">
           {/* Section Header */}
-          <div className="timeline-header-compact">
+          <div className="section-header timeline-header-aligned">
             <span className="section-tag">Engineering Evolution</span>
-            <h2 className="timeline-title-compact">Development Timeline Corridor</h2>
+            <h2 className="section-title">Development Timeline</h2>
+            <div className="aaruush-divider">
+              <span className="aaruush-divider-line" />
+              <span className="aaruush-divider-dot" />
+              <span className="aaruush-divider-line" style={{ transform: 'rotate(180deg)' }} />
+            </div>
+            <p className="section-desc">
+              Explore the milestone progression of SEGROBOT from kinematics simulation to full tournament autonomous sorting.
+            </p>
           </div>
 
-          {/* Continuous Scroll Progress Scrubber Bar */}
-          <div className="timeline-scrubber-wrap">
-            <div className="timeline-scrubber-track">
-              <div
-                className="timeline-scrubber-fill"
-                style={{ width: `${Math.round(scrollProgress * 100)}%` }}
-              />
-            </div>
-            <div className="timeline-scrubber-phases">
-              {TIMELINE_PHASES.map((p, idx) => (
-                <button
-                  key={p.year}
-                  onClick={() => scrollToPhase(idx)}
-                  className={`timeline-scrubber-node ${idx === activeIndex ? 'active' : ''} ${idx < activeIndex ? 'completed' : ''}`}
-                >
-                  <span className="node-dot" />
-                  <span className="node-year">{p.year}</span>
-                  <span className="node-label">{p.phase}</span>
-                </button>
-              ))}
-            </div>
+          {/* Phase Navigation Pills */}
+          <div className="timeline-nav-pills">
+            {TIMELINE_PHASES.map((p, idx) => (
+              <button
+                key={p.year}
+                onClick={() => scrollToPhase(idx)}
+                className={`timeline-nav-pill ${idx === activeIndex ? 'active' : ''}`}
+              >
+                <span className="timeline-pill-year">{p.year}</span>
+                <span className="timeline-pill-label">{p.phase}</span>
+              </button>
+            ))}
           </div>
 
-          {/* 3D Perspective Stage */}
-          <div className="aaruush-timeline-stage timeline-interactive-card">
+          {/* 3D Perspective Stage (Unified Zero-Overlap Architecture) */}
+          <div className="aaruush-timeline-stage">
             {/* Neon Perspective Runway Background */}
             <div className="timeline-perspective-runway">
               <div className="runway-grid-lines" />
             </div>
 
-            {/* Floating Year Watermark on Right */}
-            <div className="timeline-floating-year">
-              <span className="timeline-huge-year">{activePhase.year}</span>
-              <div className="timeline-year-line">
-                <span className="line-bar" />
-                <span className="line-dot" />
+            {/* Stage Top Header: Narrative & Year Display */}
+            <div className="timeline-stage-header">
+              <div className="timeline-stage-info">
+                <div className="timeline-stage-tag-badge">
+                  <span className="stage-tag-dot" />
+                  <span className="stage-tag-text">{activePhase.tag}</span>
+                  <span className="stage-tag-sep">•</span>
+                  <span className="stage-tag-phase">{activePhase.phase}</span>
+                </div>
+                <h3 className="timeline-stage-title">{activePhase.title}</h3>
+                <p className="timeline-stage-desc">{activePhase.desc}</p>
               </div>
-              <span className="timeline-phase-tag">{activePhase.phase}</span>
+
+              <div className="timeline-stage-year-badge">
+                <span className="stage-year-num">{activePhase.year}</span>
+                <div className="stage-year-line">
+                  <span className="line-bar" />
+                  <span className="line-dot" />
+                </div>
+                <span className="stage-year-label">{activePhase.phase}</span>
+              </div>
             </div>
 
-            {/* Continuous Horizontal Filmstrip Carousel Track */}
-            <div className="timeline-cards-strip">
-              <div className="sprocket-track left" />
-
-              <div className="timeline-carousel-viewport">
-                <div
-                  className="timeline-carousel-track"
-                  style={{
-                    transform: `translateX(-${activeIndex * 100}%)`,
-                  }}
-                >
-                  {TIMELINE_PHASES.map((phase) => (
-                    <div key={phase.phase} className="timeline-phase-slide">
-                      <div className="timeline-cards-grid">
-                        {phase.cards.map((card, cIdx) => (
-                          <div key={cIdx} className="timeline-film-card">
-                            <div className="film-card-image-wrap">
-                              <img src={card.src} alt={card.title} loading="lazy" />
-                              <div className="film-card-shadow" />
-                              <div className="film-card-arrow-marker" />
-                            </div>
-                            <div className="film-card-caption">
-                              <h5 className="film-card-title">{card.title}</h5>
-                              <p className="film-card-text">{card.caption}</p>
-                            </div>
+            {/* Continuous Horizontal Slide Track for 3 Showcase Cards */}
+            <div className="timeline-cards-viewport">
+              <div
+                className="timeline-carousel-track"
+                style={{
+                  transform: `translateX(-${activeIndex * 100}%)`,
+                }}
+              >
+                {TIMELINE_PHASES.map((phase) => (
+                  <div key={phase.phase} className="timeline-phase-slide">
+                    <div className="timeline-showcase-grid">
+                      {phase.cards.map((card, cIdx) => (
+                        <div key={cIdx} className="timeline-showcase-card">
+                          <div className="showcase-card-media">
+                            <img src={card.src} alt={card.title} loading="lazy" />
+                            <div className="showcase-card-overlay" />
+                            <span className="showcase-chip">M-{String(cIdx + 1).padStart(2, '0')}</span>
                           </div>
-                        ))}
-                      </div>
+                          <div className="showcase-card-body">
+                            <h5 className="showcase-card-title">{card.title}</h5>
+                            <p className="showcase-card-caption">{card.caption}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-
-              <div className="sprocket-track right" />
             </div>
 
-            {/* Active Phase Narrative HUD Panel */}
-            <div className="timeline-narrative-hud">
-              <div className="timeline-hud-tag">
-                {activePhase.tag} • {activePhase.phase}
-              </div>
-              <h4 className="timeline-hud-title">{activePhase.title}</h4>
-              <p className="timeline-hud-desc">{activePhase.desc}</p>
+            {/* Stage Footer Controls */}
+            <div className="timeline-stage-footer">
+              <button
+                onClick={handlePrev}
+                className="btn-timeline-stage-nav"
+                disabled={activeIndex === 0}
+                aria-label="Previous Phase"
+              >
+                <ChevronLeft size={16} />
+                <span>Previous Phase</span>
+              </button>
 
-              {/* Stepper Controls & Manual Fallback */}
-              <div className="timeline-controls-row">
-                <button
-                  onClick={handlePrev}
-                  className="btn-timeline-nav"
-                  disabled={activeIndex === 0}
-                  aria-label="Previous Phase"
-                >
-                  <ChevronLeft size={16} />
-                  <span>Prev</span>
-                </button>
-                <div className="timeline-step-indicator">
-                  {TIMELINE_PHASES.map((_, i) => (
-                    <span
-                      key={i}
-                      onClick={() => scrollToPhase(i)}
-                      className={`step-dot ${i === activeIndex ? 'active' : ''}`}
-                      title={`Jump to Phase 0${i + 1}`}
-                    />
-                  ))}
-                </div>
-                <button
-                  onClick={handleNext}
-                  className="btn-timeline-nav"
-                  aria-label="Next Phase"
-                >
-                  <span>{activeIndex === TIMELINE_PHASES.length - 1 ? 'Mandates' : 'Next'}</span>
-                  <ChevronRight size={16} />
-                </button>
+              <div className="timeline-stage-dots">
+                {TIMELINE_PHASES.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => scrollToPhase(i)}
+                    className={`stage-dot-indicator ${i === activeIndex ? 'active' : ''}`}
+                    title={`Jump to Phase 0${i + 1}`}
+                    aria-label={`Jump to Phase 0${i + 1}`}
+                  />
+                ))}
               </div>
+
+              <button
+                onClick={handleNext}
+                className="btn-timeline-stage-nav"
+                aria-label="Next Phase"
+              >
+                <span>{activeIndex === TIMELINE_PHASES.length - 1 ? 'Mandates Next' : 'Next Phase'}</span>
+                <ChevronRight size={16} />
+              </button>
             </div>
           </div>
 
