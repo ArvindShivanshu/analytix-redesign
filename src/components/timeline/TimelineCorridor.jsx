@@ -310,24 +310,13 @@ export default function TimelineCorridor() {
 
           {/* Bottom Scroll Cue */}
           <div className="timeline-bottom-scroll-cue">
-            {activeIndex === 3 ? (
-              <button
-                onClick={scrollToMandates}
-                className="timeline-next-mandates-btn"
-                title="Immediately proceed to Challenge Mandates"
-              >
-                <span>CHALLENGE MANDATES NEXT</span>
-                <ArrowDown size={14} className="cue-arrow" />
-              </button>
-            ) : (
-              <>
-                <span className="cue-dot" />
-                <span className="cue-msg">
-                  SCROLL DOWN TO ADVANCE PHASES ({activeIndex + 1}/4) • NEXT: {TIMELINE_PHASES[activeIndex + 1].phase}
-                </span>
-                <ArrowDown size={14} className="cue-arrow" />
-              </>
-            )}
+            <span className="cue-dot" />
+            <span className="cue-msg">
+              {activeIndex === 3
+                ? 'SCROLL DOWN TO ADVANCE TO CHALLENGE MANDATES'
+                : `SCROLL DOWN TO ADVANCE PHASES (${activeIndex + 1}/4) • NEXT: ${TIMELINE_PHASES[activeIndex + 1].phase}`}
+            </span>
+            <ArrowDown size={14} className="cue-arrow" />
           </div>
         </div>
       </div>

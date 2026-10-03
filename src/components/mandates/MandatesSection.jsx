@@ -2,17 +2,10 @@ import React from 'react';
 import {
   Archive,
   BarChart2,
-  CheckCircle2,
-  ArrowDown
+  CheckCircle2
 } from 'lucide-react';
 
 export default function MandatesSection() {
-  const scrollToSubsystems = () => {
-    const el = document.getElementById('subsystems');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <section id="mandates" className="portal-section mandates-section">
@@ -172,18 +165,6 @@ export default function MandatesSection() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Bottom Direct Advance Cue & Button */}
-        <div className="mandates-bottom-action">
-          <button
-            onClick={scrollToSubsystems}
-            className="btn-mandates-to-subsystems"
-            title="Immediately advance to Subsystem Architecture"
-          >
-            <span>EXPLORE SUBSYSTEM ARCHITECTURE NEXT</span>
-            <ArrowDown size={14} />
-          </button>
         </div>
       </div>
     </section>

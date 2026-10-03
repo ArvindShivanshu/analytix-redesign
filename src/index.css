@@ -1919,66 +1919,7 @@ img, video {
   50% { transform: translateY(4px); }
 }
 
-.timeline-next-mandates-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 1rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(239, 101, 34, 0.7);
-  background: rgba(239, 101, 34, 0.22);
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 0 16px rgba(239, 101, 34, 0.4);
-}
 
-.timeline-next-mandates-btn:hover {
-  background: var(--accent-orange);
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(239, 101, 34, 0.75);
-}
-
-/* Fast Direct Timeline Button in Hero CAD */
-.step-timeline-fast-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.85rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(239, 101, 34, 0.6);
-  background: rgba(239, 101, 34, 0.25);
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 0 16px rgba(239, 101, 34, 0.4);
-  margin-left: 0.5rem;
-}
-
-.step-timeline-fast-btn:hover {
-  background: var(--accent-orange);
-  transform: translateY(-1px);
-  box-shadow: 0 0 24px rgba(239, 101, 34, 0.7);
-}
-
-.step-nav-timeline-fast {
-  border-color: rgba(239, 101, 34, 0.5) !important;
-  background: rgba(239, 101, 34, 0.15) !important;
-  color: #ff914d !important;
-  margin-top: 0.4rem;
-}
-
-.step-nav-timeline-fast:hover {
-  background: var(--accent-orange) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 15px rgba(239, 101, 34, 0.6) !important;
-}
 
 /* ==========================================================================
    AARUUSH TIMELINE & MANDATES STYLE CARDS
@@ -2005,34 +1946,7 @@ img, video {
   margin-bottom: 2rem;
 }
 
-.mandates-bottom-action {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
 
-.btn-mandates-to-subsystems {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.4rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(239, 101, 34, 0.7);
-  background: rgba(239, 101, 34, 0.22);
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 0 16px rgba(239, 101, 34, 0.4);
-}
-
-.btn-mandates-to-subsystems:hover {
-  background: var(--accent-orange);
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(239, 101, 34, 0.75);
-}
 
 .mandates-grid {
   display: grid;
@@ -2640,30 +2554,7 @@ img, video {
   animation: bounceDown 1.5s infinite;
 }
 
-.subsystems-next-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-pill);
-  background: rgba(239, 101, 34, 0.15);
-  border: 1px solid var(--accent-orange);
-  color: #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  box-shadow: 0 0 15px rgba(239, 101, 34, 0.3);
-  transition: all 0.25s ease;
-}
 
-.subsystems-next-btn:hover {
-  background: var(--accent-orange);
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(239, 101, 34, 0.6);
-}
 
 /* ==========================================================================
    AARUUSH GLASS PILL FAQ ACCORDION

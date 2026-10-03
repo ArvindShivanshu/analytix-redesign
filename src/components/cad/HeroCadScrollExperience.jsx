@@ -1181,19 +1181,6 @@ export default function HeroCadScrollExperience({ onExploreTimeline, onExploreMa
           <span className="step-capsule-title">{STEPS[activeStep]?.title}</span>
           <span className="step-capsule-sep">•</span>
           <span className="step-capsule-desc">{STEPS[activeStep]?.desc}</span>
-          {activeStep === 6 && (
-            <button
-              onClick={() => {
-                if (onExploreTimeline) onExploreTimeline();
-                else document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="step-timeline-fast-btn"
-              title="Direct Fast Transition to Development Timeline"
-            >
-              <span>Direct to Timeline</span>
-              <ChevronDown size={14} />
-            </button>
-          )}
         </div>
 
         {/* Bottom Scroll Cue */}

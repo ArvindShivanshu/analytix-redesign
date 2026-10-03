@@ -280,24 +280,13 @@ export default function DomainBreakdown() {
 
           {/* Bottom Scroll Cue */}
           <div className="subsystems-bottom-scroll-cue">
-            {activeIdx === 3 ? (
-              <button
-                onClick={scrollToFaq}
-                className="subsystems-next-btn"
-                title="Immediately proceed to FAQ"
-              >
-                <span>FAQ & INTELLIGENCE NEXT</span>
-                <ArrowDown size={14} className="cue-arrow" />
-              </button>
-            ) : (
-              <>
-                <span className="cue-dot" />
-                <span className="cue-msg">
-                  SCROLL DOWN TO ADVANCE DIVISIONS ({activeIdx + 1}/4) • NEXT: {DOMAINS[activeIdx + 1]?.title}
-                </span>
-                <ArrowDown size={14} className="cue-arrow" />
-              </>
-            )}
+            <span className="cue-dot" />
+            <span className="cue-msg">
+              {activeIdx === 3
+                ? 'SCROLL DOWN TO ADVANCE TO FAQ & INTELLIGENCE'
+                : `SCROLL DOWN TO ADVANCE DIVISIONS (${activeIdx + 1}/4) • NEXT: ${DOMAINS[activeIdx + 1]?.title}`}
+            </span>
+            <ArrowDown size={14} className="cue-arrow" />
           </div>
         </div>
       </div>
